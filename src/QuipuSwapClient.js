@@ -1,4 +1,5 @@
 import TezosToolkit from "@taquito/taquito";
+import TokenClient from "./TokenClient";
 
 class QuipuSwapClient {
   constructor(
@@ -38,7 +39,7 @@ class QuipuSwapClient {
     this.tokens = [];
     tokenAddress.forEach(tokenAddress => {
       this.tezosToolkit.contract.at(tokenAddress).then(token => {
-        this.tokens.push(token);
+        this.tokens.push(TokenClient(token));
       });
     });
 
@@ -56,5 +57,9 @@ class QuipuSwapClient {
       });
     }
   }
+
+  setTezosToolkit = tezosToolkit => {
+    this.tezosToolkit = tezosToolkit;
+  };
 }
 export default QuipuSwapClient;

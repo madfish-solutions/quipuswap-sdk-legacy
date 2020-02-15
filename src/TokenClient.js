@@ -1,8 +1,5 @@
-import TezosToolkit from "@taquito/taquito";
-
 class TokenClient {
-  constructor(tezosToolkit, token = null) {
-    this.tezosToolkit = tezosToolkit;
+  constructor(token = null) {
     this.token = token;
   }
 
@@ -59,9 +56,6 @@ class TokenClient {
 
   setToken = token => {
     this.token = token;
-  };
-  setTezosToolkit = tezosToolkit => {
-    this.tezosToolkit = tezosToolkit;
   };
 }
 export default TokenClient;
