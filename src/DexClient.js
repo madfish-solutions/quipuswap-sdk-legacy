@@ -100,6 +100,61 @@ class DexClient {
     }
   }
 
+  async tokenToTokenSwap(
+    tokensIn,
+    minTokensOut,
+    tokenOutAddress,
+    approve = true,
+    confirmation = true
+  ) {
+    const dexStorage = await this.getFullStorage();
+    if (approve) {
+      const token = await this.tezosToolkit.contract.at(
+        dexStorage.tokenAddress
+      );
+
+      const approveOperation = await token.methods
+        .approve(this.dex.address, tokensIn)
+        .send();
+      await approveOperation.confirmation();
+    }
+
+    const operation = await dex.methods
+      .tokenToTokenSwap(tokensIn, minTokensOut, tokenOutAddress)
+      .send();
+    if (confirmation) {
+      await operation.confirmation();
+    }
+  }
+
+  async tokenToTokenPayment(
+    tokensIn,
+    minTokensOut,
+    recipient,
+    tokenOutAddress,
+    approve = true,
+    confirmation = true
+  ) {
+    const dexStorage = await this.getFullStorage();
+    if (approve) {
+      const token = await this.tezosToolkit.contract.at(
+        dexStorage.tokenAddress
+      );
+
+      const approveOperation = await token.methods
+        .approve(this.dex.address, tokensIn)
+        .send();
+      await approveOperation.confirmation();
+    }
+
+    const operation = await dex.methods
+      .tokenToTokenPayment(tokensIn, minTokensOut, recipient, tokenOutAddress)
+      .send();
+    if (confirmation) {
+      await operation.confirmation();
+    }
+  }
+
   async tokenToTezPayment(
     tokensIn,
     receiver,
@@ -166,9 +221,6 @@ class DexClient {
     }
   }
 
-  // TokenToTokenSwap(sender, sender, this, n.0, n.1, n.2, s)
-  // TokenToTokenPayment(sender, n.2, this, n.0, n.1, n.3, s)
-  // TokenToTokenIn(n.1, this, n.0, s)
   // InvestLiquidity(n.0, n.1, s)
   // DivestLiquidity(n.0, n.1, n.2, s)
 
