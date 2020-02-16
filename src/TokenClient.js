@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 class TokenClient {
   constructor(options = {}) {
@@ -94,18 +95,18 @@ class TokenClient {
     const writePath = options.writePath || null;
 
     const operation = await this.tezosToolkit.contract.originate({
-      code: JSON.parse(fs.readFileSync("./code/Token.json").toString()),
+      code: JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, "./code/Token.json")).toString()
+      ),
       storage: {
         owner,
         totalSupply,
-        ledger: ledger
-          ? landger
-          : {
-              [owner]: {
-                balance: totalSupply,
-                allowances: {}
-              }
-            }
+        ledger: ledger || {
+          [owner]: {
+            balance: totalSupply,
+            allowances: {}
+          }
+        }
       },
       balance
     });

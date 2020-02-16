@@ -24,43 +24,48 @@ class QuipuSwapClient {
 
     this.accounts = [];
     this.defaultAccount = {};
-    if (
-      options.defaultAccount.email &&
-      options.defaultAccount.password &&
-      options.defaultAccount.mnemonic &&
-      options.defaultAccount.secret
-    ) {
-      this.defaultAccount = options.defaultAccount;
-      this.accounts.push(options.defaultAccount);
-      this.tezosToolkit.importKey(
-        options.defaultAccount.email,
-        options.defaultAccount.password,
-        options.defaultAccount.mnemonic.join(" "),
-        options.defaultAccount.secret
-      );
-    }
-
     this.tokens = [];
     options.tokenAddress &&
       options.tokenAddress.forEach(tokenAddress => {
         this.tezosToolkit.contract.at(tokenAddress).then(token => {
-          this.tokens.push(new TokenClient(this.tezosToolkit, token));
+          this.tokens.push(
+            new TokenClient({ tezosToolkit: this.tezosToolkit, token })
+          );
         });
       });
 
     this.dexClient = null;
     if (options.dexAddress) {
       this.tezosToolkit.contract.at(options.dexAddress).then(dex => {
-        this.dexClient = new DexClient(this.tezosToolkit, dex);
+        this.dexClient = new DexClient({
+          tezosToolkit: this.tezosToolkit,
+          dex
+        });
       });
     }
 
     this.factoryClient = null;
     if (options.factoryAddress) {
       this.tezosToolkit.contract.at(options.factoryAddress).then(factory => {
-        this.factory = new FactoryClient(this.tezosToolkit, factory);
+        this.factory = new FactoryClient({
+          tezosToolkit: this.tezosToolkit,
+          factory
+        });
       });
     }
+  }
+
+  async addAccount(email, password, mnemonic, secret, setDefault = true) {
+    if (setDefault) {
+      this.defaultAccount = { email, password, mnemonic, secret };
+    }
+    this.accounts.push({ email, password, mnemonic, secret });
+    await this.tezosToolkit.importKey(
+      email,
+      password,
+      mnemonic.join(" "),
+      secret
+    );
   }
 
   setTezosToolkit(tezosToolkit) {
@@ -75,9 +80,12 @@ class QuipuSwapClient {
   }
 
   async deployToken(owner, totalSupply, options = {}) {
-    const tokenClient = new TokenClient(this.tezosToolkit, null);
+    const tokenClient = new TokenClient({
+      tezosToolkit: this.tezosToolkit,
+      token: null
+    });
     await tokenClient.deploy(owner, totalSupply, (options = {}));
-    this.tokens.push(TokenClient(tokenClient));
+    this.tokens.push(tokenClient);
   }
 }
 module.exports.QuipuSwapClient = QuipuSwapClient;

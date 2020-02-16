@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 class FactoryClient {
   constructor(options = {}) {
@@ -74,7 +75,9 @@ class FactoryClient {
     const writePath = options.writePath || null;
 
     const operation = await this.tezosToolkit.contract.originate({
-      code: JSON.parse(fs.readFileSync("./code/Factory.json").toString()),
+      code: JSON.parse(
+        path.resolve(__dirname, "./code/Factory.json").toString()
+      ),
       storage: {
         tokenList,
         tokenToExchange,

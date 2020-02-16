@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 class DexClient {
   constructor(options = {}) {
@@ -286,7 +287,7 @@ class DexClient {
     const writePath = options.writePath || null;
 
     const operation = await this.tezosToolkit.contract.originate({
-      code: JSON.parse(fs.readFileSync("./code/Dex.json").toString()),
+      code: JSON.parse(path.resolve(__dirname, "./code/Dex.json").toString()),
       storage: {
         feeRate,
         tezPool: "0",

@@ -1,6 +1,6 @@
 {
   "name": "quipuswap-sdk",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.8.4",
@@ -11,7 +11,8 @@
     "@babel/runtime": "^7.8.4",
     "@taquito/taquito": "^6.0.3-beta.1",
     "bignumber.js": "^9.0.0",
-    "commander": "^4.0.0"
+    "commander": "^4.0.0",
+    "path": "^0.12.7"
   },
   "files": [
     "/src"
