@@ -1,7 +1,7 @@
-import TezosToolkit from "@taquito/taquito";
-import TokenClient from "./TokenClient";
-import DexClient from "./DexClient";
-import FactoryClient from "./FactoryClient";
+const TezosToolkit = require("@taquito/taquito").TezosToolkit;
+const TokenClient = require("./TokenClient").TokenClient;
+const DexClient = require("./DexClient").DexClient;
+const FactoryClient = require("./FactoryClient").FactoryClient;
 
 class QuipuSwapClient {
   constructor(
@@ -60,7 +60,7 @@ class QuipuSwapClient {
     }
   }
 
-  setTezosToolkit = tezosToolkit => {
+  setTezosToolkit(tezosToolkit) {
     this.tezosToolkit = tezosToolkit;
     this.dexClient ? this.dexClient.setTezosToolkit(tezosToolkit) : null;
     this.factoryClient
@@ -69,6 +69,6 @@ class QuipuSwapClient {
     this.tokens.forEach(tokenClient =>
       tokenClient.setTezosToolkit(tezosToolkit)
     );
-  };
+  }
 }
-export default QuipuSwapClient;
+module.exports.QuipuSwapClient = QuipuSwapClient;

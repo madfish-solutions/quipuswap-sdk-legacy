@@ -329,12 +329,12 @@ class DexClient {
     }
   }
 
-  setDex = dex => {
+  setDex(dex) {
     this.dex = dex;
-  };
+  }
 
-  setTezosToolkit = tezosToolkit => {
+  setTezosToolkit(tezosToolkit) {
     this.tezosToolkit = tezosToolkit;
-  };
+  }
 }
-export default DexClient;
+module.exports.DexClient = DexClient;

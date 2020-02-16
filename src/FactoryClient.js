@@ -92,12 +92,12 @@ class FactoryClient {
     }
   }
 
-  setToken = factory => {
+  setFactory(factory) {
     this.factory = factory;
-  };
+  }
 
-  setTezosToolkit = tezosToolkit => {
+  setTezosToolkit(tezosToolkit) {
     this.tezosToolkit = tezosToolkit;
-  };
+  }
 }
-export default FactoryClient;
+module.exports.FactoryClient = FactoryClient;

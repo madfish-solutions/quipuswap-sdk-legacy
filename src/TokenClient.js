@@ -123,12 +123,12 @@ class TokenClient {
     }
   }
 
-  setToken = token => {
+  setToken(token) {
     this.token = token;
-  };
+  }
 
-  setTezosToolkit = tezosToolkit => {
+  setTezosToolkit(tezosToolkit) {
     this.tezosToolkit = tezosToolkit;
-  };
+  }
 }
-export default TokenClient;
+module.exports.TokenClient = TokenClient;
