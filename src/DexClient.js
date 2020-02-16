@@ -13,6 +13,15 @@ class DexClient {
     }
   }
 
+  async approveTokens(tokenAddress, dexAddress, amount) {
+    const token = await this.tezosToolkit.contract.at(tokenAddress);
+
+    const approveOperation = await token.methods
+      .approve(dexAddress, amount)
+      .send();
+    await approveOperation.confirmation();
+  }
+
   async getFullStorage(keys = []) {
     if (!keys.length) {
       keys.push(this.tezosToolkit.signer.publicKeyHash());
@@ -82,14 +91,7 @@ class DexClient {
     }
 
     if (approve) {
-      const token = await this.tezosToolkit.contract.at(
-        dexStorage.tokenAddress
-      );
-
-      const approveOperation = await token.methods
-        .approve(this.dex.address, tokensIn)
-        .send();
-      await approveOperation.confirmation();
+      approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
     const operation = await dex.methods
@@ -221,8 +223,71 @@ class DexClient {
     }
   }
 
-  // InvestLiquidity(n.0, n.1, s)
-  // DivestLiquidity(n.0, n.1, n.2, s)
+  async investLiquidity(
+    tezAmount,
+    candidate,
+    minShares = null,
+    tokenAmount = null,
+    approve = true,
+    confirmation = true
+  ) {
+    const dexStorage = await this.getFullStorage();
+    if (!minShares) {
+      const mutezAmount = parseFloat(tezAmount) * 1000000;
+
+      minShares = parseInt(
+        (mutezAmount / dexStorage.tezPool) * dexStorage.totalShares
+      );
+    }
+    if (approve) {
+      tokenAmount = tokenAmount
+        ? tokenAmount
+        : parseInt((minShares * dexStorage.tokenPool) / dexStorage.totalShares);
+      approveTokens(dexStorage.tokenAddress, this.dex.address, tokenAmount);
+    }
+
+    const operation = await dex.methods
+      .investLiquidity(minShares, candidate)
+      .send({
+        amount: tezAmount
+      });
+    if (confirmation) {
+      await operation.confirmation();
+    }
+  }
+
+  async divestLiquidity(
+    sharesBurned,
+    minTez = null,
+    minTokens = null,
+    confirmation = true
+  ) {
+    const dexStorage = await this.getFullStorage();
+
+    const tezPerShare = parseInt(dexStorage.tezPool / dexStorage.totalShares);
+    const tokensPerShare = parseInt(
+      dexStorage.tokenPool / dexStorage.totalShares
+    );
+    if (!minTez) {
+      minTez = tezPerShare * sharesBurned;
+    }
+    if (!minTokens) {
+      minTokens = tokensPerShare * sharesBurned;
+    }
+
+    const operation = await dex.methods
+      .divestLiquidity(
+        sharesBurned.toString(),
+        minTez.toString(),
+        minTokens.toString()
+      )
+      .send({
+        amount: tezAmount
+      });
+    if (confirmation) {
+      await operation.confirmation();
+    }
+  }
 
   setDex = dex => {
     this.dex = dex;
