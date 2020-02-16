@@ -5,56 +5,58 @@ const FactoryClient = require("./FactoryClient").FactoryClient;
 
 class QuipuSwapClient {
   constructor(
-    tezosToolkit = null,
-    network = null,
-    defaultAccount = {},
-    tokenAddress = [],
-    dexAddress = null,
-    factoryAddress = null
+    options = {
+      tezosToolkit: null,
+      network: null,
+      defaultAccount: {},
+      tokenAddress: [],
+      dexAddress: null,
+      factoryAddress: null
+    }
   ) {
-    this.tezosToolkit = tezosToolkit ? tezosToolkit : new TezosToolkit();
-    if (network) {
+    this.tezosToolkit = options.tezosToolkit || new TezosToolkit();
+    if (options.network) {
       this.tezosToolkit.setProvider({
         rpc: network,
         confirmationPollingTimeoutSecond: 300
       });
     }
 
-    this.account = [];
+    this.accounts = [];
     this.defaultAccount = {};
     if (
-      defaultAccount.email &&
-      defaultAccount.password &&
-      defaultAccount.mnemonic &&
-      defaultAccount.secret
+      options.defaultAccount.email &&
+      options.defaultAccount.password &&
+      options.defaultAccount.mnemonic &&
+      options.defaultAccount.secret
     ) {
-      this.defaultAccount = defaultAccount;
-      this.accounts.push(defaultAccount);
+      this.defaultAccount = options.defaultAccount;
+      this.accounts.push(options.defaultAccount);
       this.tezosToolkit.importKey(
-        defaultAccount.email,
-        defaultAccount.password,
-        defaultAccount.mnemonic.join(" "),
-        defaultAccount.secret
+        options.defaultAccount.email,
+        options.defaultAccount.password,
+        options.defaultAccount.mnemonic.join(" "),
+        options.defaultAccount.secret
       );
     }
 
     this.tokens = [];
-    tokenAddress.forEach(tokenAddress => {
+    options.tokenAddress.forEach(tokenAddress => {
       this.tezosToolkit.contract.at(tokenAddress).then(token => {
         this.tokens.push(TokenClient(this.tezosToolkit, token));
       });
     });
 
     this.dexClient = null;
-    if (dexAddress) {
-      this.tezosToolkit.contract.at(dexAddress).then(dex => {
+    if (options.dexAddress) {
+      this.tezosToolkit.contract.at(options.dexAddress).then(dex => {
         this.dexClient = DexClient(this.tezosToolkit, dex);
       });
     }
 
     this.factoryClient = null;
-    if (factoryAddress) {
-      this.tezosToolkit.contract.at(factoryAddress).then(factory => {
+    if (options.factoryAddress) {
+      this.tezosToolkit.contract.at(options.factoryAddress).then(factory => {
         this.factory = FactoryClient(this.tezosToolkit, factory);
       });
     }
