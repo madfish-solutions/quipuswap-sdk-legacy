@@ -44,21 +44,21 @@ class QuipuSwapClient {
     options.tokenAddress &&
       options.tokenAddress.forEach(tokenAddress => {
         this.tezosToolkit.contract.at(tokenAddress).then(token => {
-          this.tokens.push(TokenClient(this.tezosToolkit, token));
+          this.tokens.push(new TokenClient(this.tezosToolkit, token));
         });
       });
 
     this.dexClient = null;
     if (options.dexAddress) {
       this.tezosToolkit.contract.at(options.dexAddress).then(dex => {
-        this.dexClient = DexClient(this.tezosToolkit, dex);
+        this.dexClient = new DexClient(this.tezosToolkit, dex);
       });
     }
 
     this.factoryClient = null;
     if (options.factoryAddress) {
       this.tezosToolkit.contract.at(options.factoryAddress).then(factory => {
-        this.factory = FactoryClient(this.tezosToolkit, factory);
+        this.factory = new FactoryClient(this.tezosToolkit, factory);
       });
     }
   }
@@ -72,6 +72,12 @@ class QuipuSwapClient {
     this.tokens.forEach(tokenClient =>
       tokenClient.setTezosToolkit(tezosToolkit)
     );
+  }
+
+  async deployToken(owner, totalSupply, options = {}) {
+    const tokenClient = new TokenClient(this.tezosToolkit, null);
+    await tokenClient.deploy(owner, totalSupply, (options = {}));
+    this.tokens.push(TokenClient(tokenClient));
   }
 }
 module.exports.QuipuSwapClient = QuipuSwapClient;
