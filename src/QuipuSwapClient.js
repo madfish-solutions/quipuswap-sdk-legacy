@@ -17,7 +17,7 @@ class QuipuSwapClient {
     this.tezosToolkit = options.tezosToolkit || new TezosToolkit();
     if (options.network) {
       this.tezosToolkit.setProvider({
-        rpc: network,
+        rpc: options.network,
         confirmationPollingTimeoutSecond: 300
       });
     }
@@ -41,11 +41,12 @@ class QuipuSwapClient {
     }
 
     this.tokens = [];
-    options.tokenAddress.forEach(tokenAddress => {
-      this.tezosToolkit.contract.at(tokenAddress).then(token => {
-        this.tokens.push(TokenClient(this.tezosToolkit, token));
+    options.tokenAddress &&
+      options.tokenAddress.forEach(tokenAddress => {
+        this.tezosToolkit.contract.at(tokenAddress).then(token => {
+          this.tokens.push(TokenClient(this.tezosToolkit, token));
+        });
       });
-    });
 
     this.dexClient = null;
     if (options.dexAddress) {
