@@ -1,5 +1,7 @@
 import TezosToolkit from "@taquito/taquito";
 import TokenClient from "./TokenClient";
+import DexClient from "./DexClient";
+import FactoryClient from "./FactoryClient";
 
 class QuipuSwapClient {
   constructor(
@@ -39,27 +41,34 @@ class QuipuSwapClient {
     this.tokens = [];
     tokenAddress.forEach(tokenAddress => {
       this.tezosToolkit.contract.at(tokenAddress).then(token => {
-        this.tokens.push(TokenClient(token));
+        this.tokens.push(TokenClient(this.tezosToolkit, token));
       });
     });
 
-    this.dex = null;
+    this.dexClient = null;
     if (dexAddress) {
       this.tezosToolkit.contract.at(dexAddress).then(dex => {
-        this.dex = dex;
+        this.dexClient = DexClient(this.tezosToolkit, dex);
       });
     }
 
-    this.factory = null;
+    this.factoryClient = null;
     if (factoryAddress) {
       this.tezosToolkit.contract.at(factoryAddress).then(factory => {
-        this.factory = factory;
+        this.factory = FactoryClient(this.tezosToolkit, factory);
       });
     }
   }
 
   setTezosToolkit = tezosToolkit => {
     this.tezosToolkit = tezosToolkit;
+    this.dexClient ? this.dexClient.setTezosToolkit(tezosToolkit) : null;
+    this.factoryClient
+      ? this.factoryClient.setTezosToolkit(tezosToolkit)
+      : null;
+    this.tokens.forEach(tokenClient =>
+      tokenClient.setTezosToolkit(tezosToolkit)
+    );
   };
 }
 export default QuipuSwapClient;

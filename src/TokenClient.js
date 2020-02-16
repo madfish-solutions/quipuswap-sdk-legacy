@@ -1,6 +1,37 @@
 class TokenClient {
-  constructor(token = null) {
+  constructor(tezosToolkit = null, token = null) {
+    this.tezosToolkit = tezosToolkit;
     this.token = token;
+  }
+
+  async getFullStorage(keys = []) {
+    if (!keys.length) {
+      keys.push(this.tezosToolkit.signer.publicKeyHash());
+    }
+    const storage = await this.token.storage();
+    const accounts = await keys.reduce(async (prev, current) => {
+      const value = await prev;
+
+      let entry = {
+        balance: new BigNumber(0),
+        allowances: {}
+      };
+
+      try {
+        entry = storage.ledger[current]; // await storage.ledger.get(current);
+      } catch (ex) {
+        console.error(ex);
+      }
+
+      return {
+        ...value,
+        [current]: entry
+      };
+    }, Promise.resolve({}));
+    return {
+      ...storage,
+      accounts
+    };
   }
 
   async transfer(accountFrom, destination, value, confirmation = true) {
@@ -54,8 +85,48 @@ class TokenClient {
     }
   }
 
+  async deploy(
+    owner,
+    totalSupply,
+    ledger = null,
+    balance = 0,
+    confirmation = false,
+    writePath = null
+  ) {
+    const operation = await this.tezosToolkit.contract.originate({
+      code: JSON.parse(fs.readFileSync("./code/Token.json").toString()),
+      storage: {
+        owner,
+        totalSupply,
+        ledger: ledger
+          ? landger
+          : {
+              [owner]: {
+                balance: totalSupply,
+                allowances: {}
+              }
+            }
+      },
+      balance
+    });
+    if (confirmation) {
+      await operation.confirmation();
+    }
+    this.token = op.contract();
+    if (writePath) {
+      const detail = {
+        address: this.token.address
+      };
+      fs.writeFileSync(writePath, JSON.stringify(detail));
+    }
+  }
+
   setToken = token => {
     this.token = token;
+  };
+
+  setTezosToolkit = tezosToolkit => {
+    this.tezosToolkit = tezosToolkit;
   };
 }
 export default TokenClient;

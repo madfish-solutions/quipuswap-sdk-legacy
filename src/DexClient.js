@@ -289,6 +289,44 @@ class DexClient {
     }
   }
 
+  async deploy(
+    feeRate,
+    tokenAddress,
+    factoryAddress,
+    delegated,
+    balance = 0,
+    confirmation = false,
+    writePath = null
+  ) {
+    const operation = await this.tezosToolkit.contract.originate({
+      code: JSON.parse(fs.readFileSync("./code/Dex.json").toString()),
+      storage: {
+        feeRate,
+        tezPool: "0",
+        tokenPool: "0",
+        invariant: "0",
+        totalShares: "0",
+        tokenAddress,
+        factoryAddress,
+        shares: {},
+        candidates: {},
+        votes: {},
+        delegated
+      },
+      balance
+    });
+    if (confirmation) {
+      await operation.confirmation();
+    }
+    this.dex = op.contract();
+    if (writePath) {
+      const detail = {
+        address: this.dex.address
+      };
+      fs.writeFileSync(writePath, JSON.stringify(detail));
+    }
+  }
+
   setDex = dex => {
     this.dex = dex;
   };
