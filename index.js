@@ -1,8 +1,3 @@
-/* Structure 
-- Token
-- Dex
-- Factory
-*/
-import { QuipuSwapClient } from "./src/QuipuSwapClient";
+require("@babel/register")();
 
-export default QuipuSwapClient;
+module.exports = require("./src/QuipuSwapClient");
