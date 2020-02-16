@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 class TokenClient {
   constructor(tezosToolkit = null, token = null) {
     this.tezosToolkit = tezosToolkit;
@@ -112,7 +114,7 @@ class TokenClient {
     if (confirmation) {
       await operation.confirmation();
     }
-    this.token = op.contract();
+    this.token = operation.contract();
     if (writePath) {
       const detail = {
         address: this.token.address

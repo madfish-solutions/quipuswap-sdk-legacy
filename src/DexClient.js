@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 class DexClient {
   constructor(tezosToolkit = null, dex = null) {
     this.tezosToolkit = tezosToolkit;
@@ -318,7 +320,7 @@ class DexClient {
     if (confirmation) {
       await operation.confirmation();
     }
-    this.dex = op.contract();
+    this.dex = operation.contract();
     if (writePath) {
       const detail = {
         address: this.dex.address
