@@ -1,9 +1,9 @@
 const fs = require("fs");
 
 class TokenClient {
-  constructor(tezosToolkit = null, token = null) {
-    this.tezosToolkit = tezosToolkit;
-    this.token = token;
+  constructor(options = {}) {
+    this.tezosToolkit = options.tezosToolkit || null;
+    this.token = options.token || null;
   }
 
   async getFullStorage(keys = []) {
@@ -87,14 +87,12 @@ class TokenClient {
     }
   }
 
-  async deploy(
-    owner,
-    totalSupply,
-    ledger = null,
-    balance = 0,
-    confirmation = false,
-    writePath = null
-  ) {
+  async deploy(owner, totalSupply, options = {}) {
+    const ledger = options.ledger || null;
+    const balance = options.balance || 0;
+    const confirmation = options.confirmation || false;
+    const writePath = options.writePath || null;
+
     const operation = await this.tezosToolkit.contract.originate({
       code: JSON.parse(fs.readFileSync("./code/Token.json").toString()),
       storage: {

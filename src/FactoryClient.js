@@ -1,12 +1,14 @@
 const fs = require("fs");
 
 class FactoryClient {
-  constructor(tezosToolkit = null, factory = null) {
-    this.tezosToolkit = tezosToolkit;
-    this.factory = factory;
+  constructor(options = {}) {
+    this.tezosToolkit = options.tezosToolkit || null;
+    this.factory = options.factory || null;
   }
 
-  async getFullStorage(tokenToExchangeKeys = [], exchangeToTokenKeys = []) {
+  async getFullStorage(options = {}) {
+    const tokenToExchangeKeys = options.tokenToExchangeKeys || [];
+    const exchangeToTokenKeys = options.exchangeToTokenKeys || [];
     if (!keys.length) {
       keys.push(this.tezosToolkit.signer.publicKeyHash());
     }
@@ -63,14 +65,14 @@ class FactoryClient {
     }
   }
 
-  async deploy(
-    tokenToExchange = {},
-    exchangeToToken = {},
-    tokenList = [],
-    balance = 0,
-    confirmation = false,
-    writePath = null
-  ) {
+  async deploy(options) {
+    const tokenToExchange = options.tokenToExchange || {};
+    const exchangeToToken = options.exchangeToToken || {};
+    const tokenList = options.tokenList || [];
+    const balance = options.balance || 0;
+    const confirmation = options.confirmation || false;
+    const writePath = options.writePath || null;
+
     const operation = await this.tezosToolkit.contract.originate({
       code: JSON.parse(fs.readFileSync("./code/Factory.json").toString()),
       storage: {
