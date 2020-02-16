@@ -1,14 +1,13 @@
 {
-  "name": "quipuswap-ывл",
+  "name": "quipuswap-sdk",
   "version": "0.0.1",
-  "main": "src/index.js",
-  "license": "ISC",
+  "main": "index.js",
   "dependencies": {
     "@taquito/taquito": "^6.0.3-beta.1",
     "bignumber.js": "^9.0.0",
     "commander": "^4.0.0"
   },
   "files": [
-    "/dist"
+    "/src"
   ]
 }

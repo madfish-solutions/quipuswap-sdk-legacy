@@ -3,6 +3,6 @@
 - Dex
 - Factory
 */
-import { QuipuSwapClient } from "./QuipuSwapClient";
+import { QuipuSwapClient } from "./src/QuipuSwapClient";
 
 export default QuipuSwapClient;
