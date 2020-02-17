@@ -23,7 +23,11 @@ class DexClient {
 
     const dexStorage = await this.getFullStorage();
     if (approve) {
-      approveTokens(dexStorage.tokenAddress, this.dex.address, tokenAmount);
+      this.approveTokens(
+        dexStorage.tokenAddress,
+        this.dex.address,
+        tokenAmount
+      );
     }
     const operation = await this.dex.methods
       .initializeExchange(tokenAmount, candidate)
@@ -102,7 +106,7 @@ class DexClient {
     }
 
     if (approve) {
-      approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
+      this.approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
     const operation = await this.dex.methods
@@ -123,14 +127,7 @@ class DexClient {
     const confirmation = options.confirmation || true;
     const dexStorage = await this.getFullStorage();
     if (approve) {
-      const token = await this.tezosToolkit.contract.at(
-        dexStorage.tokenAddress
-      );
-
-      const approveOperation = await token.methods
-        .approve(this.dex.address, tokensIn)
-        .send();
-      await approveOperation.confirmation();
+      this.approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
     const operation = await this.dex.methods
@@ -152,14 +149,7 @@ class DexClient {
     const confirmation = options.confirmation || true;
     const dexStorage = await this.getFullStorage();
     if (approve) {
-      const token = await this.tezosToolkit.contract.at(
-        dexStorage.tokenAddress
-      );
-
-      const approveOperation = await token.methods
-        .approve(this.dex.address, tokensIn)
-        .send();
-      await approveOperation.confirmation();
+      this.approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
     const operation = await this.dex.methods
@@ -187,14 +177,7 @@ class DexClient {
     }
 
     if (approve) {
-      const token = await this.tezosToolkit.contract.at(
-        dexStorage.tokenAddress
-      );
-
-      const approveOperation = await token.methods
-        .approve(this.dex.address, tokensIn)
-        .send();
-      await approveOperation.confirmation();
+      this.approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
     const operation = await this.dex.methods
@@ -249,7 +232,11 @@ class DexClient {
       tokenAmount = tokenAmount
         ? tokenAmount
         : parseInt((minShares * dexStorage.tokenPool) / dexStorage.totalShares);
-      approveTokens(dexStorage.tokenAddress, this.dex.address, tokenAmount);
+      this.approveTokens(
+        dexStorage.tokenAddress,
+        this.dex.address,
+        tokenAmount
+      );
     }
 
     const operation = await this.dex.methods
