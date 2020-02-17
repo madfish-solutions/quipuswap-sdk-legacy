@@ -65,7 +65,7 @@ class DexClient {
   }
 
   async tezToTokenSwap(tezIn, options = {}) {
-    const minTokensOut = options.minTokensOut || null;
+    let minTokensOut = options.minTokensOut || null;
     const confirmation = options.confirmation || true;
     if (!minTokensOut) {
       const mutezAmount = parseFloat(tezIn) * 1000000;
@@ -91,7 +91,7 @@ class DexClient {
   }
 
   async tokenToTezSwap(tokensIn, options = {}) {
-    const minTezOut = options.minTezOut || null;
+    let minTezOut = options.minTezOut || null;
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
     const dexStorage = await this.getFullStorage();
@@ -161,7 +161,7 @@ class DexClient {
   }
 
   async tokenToTezPayment(tokensIn, receiver, options = {}) {
-    const minTezOut = options.minTezOut || null;
+    let minTezOut = options.minTezOut || null;
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
 
@@ -189,7 +189,7 @@ class DexClient {
   }
 
   async tezToTokenPayment(tezIn, receiver, options) {
-    const minTokensOut = options.minTokensOut || null;
+    let minTokensOut = options.minTokensOut || null;
     const confirmation = options.confirmation || true;
 
     if (!minTokensOut) {
@@ -216,8 +216,8 @@ class DexClient {
   }
 
   async investLiquidity(tezAmount, candidate, options = {}) {
-    const minShares = options.minShares || null;
-    const tokenAmount = options.tokenAmount || null;
+    let minShares = options.minShares || null;
+    let tokenAmount = options.tokenAmount || null;
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
     const dexStorage = await this.getFullStorage();
@@ -250,8 +250,8 @@ class DexClient {
   }
 
   async divestLiquidity(sharesBurned, options = {}) {
-    const minTez = options.minTez || null;
-    const minTokens = options.minTokens || null;
+    let minTez = options.minTez || null;
+    let minTokens = options.minTokens || null;
     const confirmation = options.confirmation || true;
 
     const dexStorage = await this.getFullStorage();
