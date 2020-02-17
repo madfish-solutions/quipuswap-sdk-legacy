@@ -1,6 +1,6 @@
 {
   "name": "quipuswap-sdk",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.8.4",

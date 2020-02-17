@@ -287,7 +287,9 @@ class DexClient {
     const writePath = options.writePath || null;
 
     const operation = await this.tezosToolkit.contract.originate({
-      code: JSON.parse(path.resolve(__dirname, "./code/Dex.json").toString()),
+      code: JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, "./code/Dex.json")).toString()
+      ),
       storage: {
         feeRate,
         tezPool: "0",

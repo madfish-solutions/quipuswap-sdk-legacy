@@ -76,7 +76,9 @@ class FactoryClient {
 
     const operation = await this.tezosToolkit.contract.originate({
       code: JSON.parse(
-        path.resolve(__dirname, "./code/Factory.json").toString()
+        fs
+          .readFileSync(path.resolve(__dirname, "./code/Factory.json"))
+          .toString()
       ),
       storage: {
         tokenList,

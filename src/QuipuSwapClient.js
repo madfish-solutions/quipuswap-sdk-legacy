@@ -84,8 +84,38 @@ class QuipuSwapClient {
       tezosToolkit: this.tezosToolkit,
       token: null
     });
-    await tokenClient.deploy(owner, totalSupply, (options = {}));
+    await tokenClient.deploy(owner, totalSupply, options);
     this.tokens.push(tokenClient);
+  }
+
+  async deployFactory(options = {}) {
+    const factoryClient = new FactoryClient({
+      tezosToolkit: this.tezosToolkit,
+      factory: null
+    });
+    await factoryClient.deploy(options);
+    this.factoryClient = factoryClient;
+  }
+
+  async deployDex(
+    feeRate,
+    tokenAddress,
+    factoryAddress,
+    delegated,
+    options = {}
+  ) {
+    const dexClient = new DexClient({
+      tezosToolkit: this.tezosToolkit,
+      dex: null
+    });
+    await dexClient.deploy(
+      feeRate,
+      tokenAddress,
+      factoryAddress,
+      delegated,
+      options
+    );
+    this.dexClient = dexClient;
   }
 }
 module.exports.QuipuSwapClient = QuipuSwapClient;
