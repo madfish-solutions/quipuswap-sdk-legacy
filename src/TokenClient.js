@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const BigNumber = require("bignumber.js");
 
 class TokenClient {
   constructor(options = {}) {
@@ -9,7 +10,7 @@ class TokenClient {
 
   async getFullStorage(keys = []) {
     if (!keys.length) {
-      keys.push(this.tezosToolkit.signer.publicKeyHash());
+      keys.push(await this.tezosToolkit.signer.publicKeyHash());
     }
     const storage = await this.token.storage();
     const accounts = await keys.reduce(async (prev, current) => {

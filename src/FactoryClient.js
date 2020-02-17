@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const BigNumber = require("bignumber.js");
 
 class FactoryClient {
   constructor(options = {}) {
@@ -10,9 +11,6 @@ class FactoryClient {
   async getFullStorage(options = {}) {
     const tokenToExchangeKeys = options.tokenToExchangeKeys || [];
     const exchangeToTokenKeys = options.exchangeToTokenKeys || [];
-    if (!keys.length) {
-      keys.push(this.tezosToolkit.signer.publicKeyHash());
-    }
     const storage = await this.factory.storage();
     const extendedTokenToExchange = await tokenToExchangeKeys.reduce(
       async (prev, current) => {

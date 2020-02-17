@@ -47,7 +47,7 @@ class QuipuSwapClient {
     this.factoryClient = null;
     if (options.factoryAddress) {
       this.tezosToolkit.contract.at(options.factoryAddress).then(factory => {
-        this.factory = new FactoryClient({
+        this.factoryClient = new FactoryClient({
           tezosToolkit: this.tezosToolkit,
           factory
         });

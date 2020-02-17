@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const BigNumber = require("bignumber.js");
 
 class DexClient {
   constructor(options = {}) {
@@ -27,7 +28,7 @@ class DexClient {
 
   async getFullStorage(keys = []) {
     if (!keys.length) {
-      keys.push(this.tezosToolkit.signer.publicKeyHash());
+      keys.push(await this.tezosToolkit.signer.publicKeyHash());
     }
     const storage = await this.dex.storage();
     const extendedShares = await keys.reduce(async (prev, current) => {
