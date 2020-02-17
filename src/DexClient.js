@@ -308,7 +308,7 @@ class DexClient {
     if (confirmation) {
       await operation.confirmation();
     }
-    this.dex = operation.contract();
+    this.dex = await operation.contract();
     if (writePath) {
       const detail = {
         address: this.dex.address

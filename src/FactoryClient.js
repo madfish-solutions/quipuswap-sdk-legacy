@@ -90,7 +90,7 @@ class FactoryClient {
     if (confirmation) {
       await operation.confirmation();
     }
-    this.factory = operation.contract();
+    this.factory = await operation.contract();
     if (writePath) {
       const detail = {
         address: this.factory.address

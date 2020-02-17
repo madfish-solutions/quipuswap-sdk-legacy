@@ -113,7 +113,7 @@ class TokenClient {
     if (confirmation) {
       await operation.confirmation();
     }
-    this.token = operation.contract();
+    this.token = await operation.contract();
     if (writePath) {
       const detail = {
         address: this.token.address
