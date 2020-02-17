@@ -56,16 +56,22 @@ class QuipuSwapClient {
   }
 
   async addAccount(email, password, mnemonic, secret, setDefault = true) {
+    let pk;
     if (setDefault) {
       this.defaultAccount = { email, password, mnemonic, secret };
+      await this.tezosToolkit.importKey(
+        email,
+        password,
+        mnemonic.join(" "),
+        secret
+      );
+      pk = await this.tezosToolkit.signer.publicKeyHash();
+    } else {
+      const Tezos = new TezosToolkit();
+      await Tezos.importKey(email, password, mnemonic.join(" "), secret);
+      pk = await Tezos.signer.publicKeyHash();
     }
-    this.accounts.push({ email, password, mnemonic, secret });
-    await this.tezosToolkit.importKey(
-      email,
-      password,
-      mnemonic.join(" "),
-      secret
-    );
+    this.accounts.push({ email, password, mnemonic, secret, pk });
   }
 
   setTezosToolkit(tezosToolkit) {
