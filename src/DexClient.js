@@ -8,15 +8,6 @@ class DexClient {
     this.dex = options.dex || null;
   }
 
-  async initializeExchange(tokenAmount, candidate, confirmation = true) {
-    const operation = await dex.methods
-      .initializeExchange(tokenAmount, candidate)
-      .send();
-    if (confirmation) {
-      await operation.confirmation();
-    }
-  }
-
   async approveTokens(tokenAddress, dexAddress, amount) {
     const token = await this.tezosToolkit.contract.at(tokenAddress);
 
@@ -24,6 +15,22 @@ class DexClient {
       .approve(dexAddress, amount)
       .send();
     await approveOperation.confirmation();
+  }
+
+  async initializeExchange(tokenAmount, tezAmount, candidate, options = {}) {
+    const approve = options.approve || true;
+    const confirmation = options.confirmation || true;
+
+    const dexStorage = await this.getFullStorage();
+    if (approve) {
+      approveTokens(dexStorage.tokenAddress, this.dex.address, tokenAmount);
+    }
+    const operation = await this.dex.methods
+      .initializeExchange(tokenAmount, candidate)
+      .send({ amount: tezAmount });
+    if (confirmation) {
+      await operation.confirmation();
+    }
   }
 
   async getFullStorage(keys = []) {
@@ -53,7 +60,7 @@ class DexClient {
     };
   }
 
-  async tezToTokenSwap(tezIn, options) {
+  async tezToTokenSwap(tezIn, options = {}) {
     const minTokensOut = options.minTokensOut || null;
     const confirmation = options.confirmation || true;
     if (!minTokensOut) {
@@ -69,7 +76,7 @@ class DexClient {
       minTokensOut = parseInt(parseInt(dexStorage.tokenPool - newTokenPool));
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .tezToTokenSwap(minTokensOut.toString())
       .send({
         amount: tezIn
@@ -79,7 +86,7 @@ class DexClient {
     }
   }
 
-  async tokenToTezSwap(tokensIn, options) {
+  async tokenToTezSwap(tokensIn, options = {}) {
     const minTezOut = options.minTezOut || null;
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
@@ -98,7 +105,7 @@ class DexClient {
       approveTokens(dexStorage.tokenAddress, this.dex.address, tokensIn);
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .tokenToTezSwap(tokensIn, minTezOut.toString())
       .send();
     if (confirmation) {
@@ -106,35 +113,11 @@ class DexClient {
     }
   }
 
-  async tokenToTokenSwap(tokensIn, minTokensOut, tokenOutAddress, options) {
-    const approve = options.approve || true;
-    const confirmation = options.confirmation || true;
-    const dexStorage = await this.getFullStorage();
-    if (approve) {
-      const token = await this.tezosToolkit.contract.at(
-        dexStorage.tokenAddress
-      );
-
-      const approveOperation = await token.methods
-        .approve(this.dex.address, tokensIn)
-        .send();
-      await approveOperation.confirmation();
-    }
-
-    const operation = await dex.methods
-      .tokenToTokenSwap(tokensIn, minTokensOut, tokenOutAddress)
-      .send();
-    if (confirmation) {
-      await operation.confirmation();
-    }
-  }
-
-  async tokenToTokenPayment(
+  async tokenToTokenSwap(
     tokensIn,
     minTokensOut,
-    recipient,
     tokenOutAddress,
-    options
+    options = {}
   ) {
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
@@ -150,7 +133,36 @@ class DexClient {
       await approveOperation.confirmation();
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
+      .tokenToTokenSwap(tokensIn, minTokensOut, tokenOutAddress)
+      .send();
+    if (confirmation) {
+      await operation.confirmation();
+    }
+  }
+
+  async tokenToTokenPayment(
+    tokensIn,
+    minTokensOut,
+    recipient,
+    tokenOutAddress,
+    options = {}
+  ) {
+    const approve = options.approve || true;
+    const confirmation = options.confirmation || true;
+    const dexStorage = await this.getFullStorage();
+    if (approve) {
+      const token = await this.tezosToolkit.contract.at(
+        dexStorage.tokenAddress
+      );
+
+      const approveOperation = await token.methods
+        .approve(this.dex.address, tokensIn)
+        .send();
+      await approveOperation.confirmation();
+    }
+
+    const operation = await this.dex.methods
       .tokenToTokenPayment(tokensIn, minTokensOut, recipient, tokenOutAddress)
       .send();
     if (confirmation) {
@@ -158,7 +170,7 @@ class DexClient {
     }
   }
 
-  async tokenToTezPayment(tokensIn, receiver, options) {
+  async tokenToTezPayment(tokensIn, receiver, options = {}) {
     const minTezOut = options.minTezOut || null;
     const approve = options.approve || true;
     const confirmation = options.confirmation || true;
@@ -185,7 +197,7 @@ class DexClient {
       await approveOperation.confirmation();
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .tokenToTezPayment(tokensIn, minTezOut.toString(), receiver)
       .send();
     if (confirmation) {
@@ -210,7 +222,7 @@ class DexClient {
       minTokensOut = parseInt(parseInt(dexStorage.tokenPool - newTokenPool));
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .tezToTokenPayment(minTokensOut.toString(), receiver)
       .send({
         amount: tezIn
@@ -220,7 +232,7 @@ class DexClient {
     }
   }
 
-  async investLiquidity(tezAmount, candidate, options) {
+  async investLiquidity(tezAmount, candidate, options = {}) {
     const minShares = options.minShares || null;
     const tokenAmount = options.tokenAmount || null;
     const approve = options.approve || true;
@@ -240,7 +252,7 @@ class DexClient {
       approveTokens(dexStorage.tokenAddress, this.dex.address, tokenAmount);
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .investLiquidity(minShares, candidate)
       .send({
         amount: tezAmount
@@ -250,7 +262,7 @@ class DexClient {
     }
   }
 
-  async divestLiquidity(sharesBurned, options) {
+  async divestLiquidity(sharesBurned, options = {}) {
     const minTez = options.minTez || null;
     const minTokens = options.minTokens || null;
     const confirmation = options.confirmation || true;
@@ -268,7 +280,7 @@ class DexClient {
       minTokens = tokensPerShare * sharesBurned;
     }
 
-    const operation = await dex.methods
+    const operation = await this.dex.methods
       .divestLiquidity(
         sharesBurned.toString(),
         minTez.toString(),
